@@ -1,0 +1,10 @@
+{
+    "outer1": {
+        "key1": "value1",
+        "key2": "value2"
+    },
+    "outer2": {
+        "key1": { "nested-key" : "value" }
+    },    
+    "array1" : [ "one", "two", "three" ]
+}

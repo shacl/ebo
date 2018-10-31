@@ -1,0 +1,6 @@
+macro(push variable_name)
+  if(DEFINED _${variable_name})
+    push(_${variable_name})
+  endif()
+  set(_${variable_name} "${${variable_name}}")
+endmacro()
