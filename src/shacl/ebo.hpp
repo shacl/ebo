@@ -23,7 +23,9 @@ struct Implementation;
 template<>
 struct Implementation<>{
   template<typename...>
-  struct type {};
+  struct type {
+    constexpr type() = default;
+  };
 };
 
 template<typename T, typename... Ts>
@@ -46,7 +48,7 @@ struct Implementation<T, Ts...> {
 
   template<typename dummy>
   class type<dummy, true> : Recursion, T {
-  protected:
+  public:
     template<typename Arg,
              typename... Args,
              std::enable_if_t
@@ -57,6 +59,7 @@ struct Implementation<T, Ts...> {
       Recursion(std::forward<Args>(args)...),
       T(std::forward<Arg>(arg)){}
 
+  protected:
     constexpr const auto& get(Index<0>) const {
       return static_cast<const T&>(*this);
     }
@@ -83,7 +86,7 @@ struct Implementation<T, Ts...> {
   class type<dummy, false> : Recursion {
     T t;
 
-  protected:
+  public:
     template<typename Arg, typename... Args,
              std::enable_if_t
              <std::is_constructible<T, Arg>::value
@@ -93,11 +96,12 @@ struct Implementation<T, Ts...> {
       Recursion(std::forward<Args>(args)...),
       t(std::forward<Arg>(arg)){}
 
+  protected:
     constexpr const auto& get(Index<0>) const { return this->t; }
 
     template<int i>
     constexpr const auto& get(Index<i>) const {
-      return Recursion::get(index<I - 1>{});
+      return Recursion::get(index<i - 1>);
     }
   };
 };

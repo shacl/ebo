@@ -1,7 +1,7 @@
 #define CATCH_CONFIG_MAIN
-
+#include <iostream>
 #include "shacl/ebo.hpp"
-#include "Catch2/catch.hpp"
+#include "catch2/catch.hpp"
 
 struct Empty {};
 struct AlsoEmpty {};
@@ -77,7 +77,7 @@ SCENARIO("Automated Empty base class optimization with mutliple inheritance"){
 
   GIVEN("multiple classes"){
     GIVEN("all classes NonEmpty"){
-      using Type = shacl::ebo::Type<NonEmpty, NonEmpty>;
+      using Type = expose<shacl::ebo::Type<NonEmpty, NonEmpty>>;
 
       THEN("the resulting type type will not be empty"){
         REQUIRE(not std::is_empty<Type>::value);
@@ -106,7 +106,7 @@ SCENARIO("Automated Empty base class optimization with mutliple inheritance"){
     }
 
     GIVEN("one class empty and one class non-empty"){
-      using Type = shacl::ebo::Type<NonEmpty, Empty>;
+      using Type = expose<shacl::ebo::Type<NonEmpty, Empty>>;
 
       THEN("the resulting type type will not be empty"){
         REQUIRE(not std::is_empty<Type>::value);
@@ -134,7 +134,7 @@ SCENARIO("Automated Empty base class optimization with mutliple inheritance"){
     }
 
     GIVEN("one class empty and one class non-empty"){
-      using Type = shacl::ebo::Type<Empty, AlsoEmpty>;
+      using Type = expose<shacl::ebo::Type<Empty, AlsoEmpty>>;
 
       THEN("the resulting type type will be empty"){
         REQUIRE(std::is_empty<Type>::value);
@@ -154,7 +154,7 @@ SCENARIO("Automated Empty base class optimization with mutliple inheritance"){
 
         WHEN("querying for the second type"){
           using GetResult_t = decltype(instance.get(shacl::ebo::index<1>));
-          REQUIRE(std::is_same<GetResult_t, const NonEmpty&>::value);
+          REQUIRE(std::is_same<GetResult_t, const AlsoEmpty&>::value);
         }
       }
     }
