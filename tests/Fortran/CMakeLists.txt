@@ -1,0 +1,8 @@
+add_subdirectory(Backtrace)
+add_subdirectory(Standard)
+add_subdirectory(TempArrays)
+add_subdirectory(NoBackslashEscape)
+add_subdirectory(Integer)
+add_subdirectory(Real)
+add_subdirectory(StandardAdherence)
+add_subdirectory(ModuleDirectory)
