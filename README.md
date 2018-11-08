@@ -6,8 +6,8 @@
 
 When working with higher level functions in C++, object composition
 is often times many levels deep. In some cases, the function objects
-may have no state, and are referred to as empty classes. Niave
-Ecomposition as member variables incur memory overhead; the footprint
+may have no state, and are referred to as empty classes. Naive
+composition as member variables incur memory overhead; the footprint
 of empty classes (one byte rounded up to the alignment requirement) cannot
 be elided under composititon in C++14.
 
