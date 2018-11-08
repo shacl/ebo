@@ -57,10 +57,10 @@ endif()
 add_subdirectory(src/shacl)
 add_subdirectory(examples/1)
 
-install(TARGETS ebo EXPORT eboConfig)
+install(TARGETS ebo EXPORT eboTargets)
 
-install(EXPORT eboConfig
-  FILE eboConfig.cmake
+install(EXPORT eboTargets
+  FILE eboTargets.cmake
   NAMESPACE shacl::
   DESTINATION share/cmake/shacl/ebo)
 
@@ -75,6 +75,7 @@ write_basic_package_version_file("eboConfigVersion.cmake"
   COMPATIBILITY SameMajorVersion)
 
 install(FILES
+  "${ebo_SOURCE_DIR}/.cmake/eboConfig.cmake"
   "${ebo_BINARY_DIR}/eboConfigVersion.cmake"
   DESTINATION share/cmake/shacl/ebo)
 
