@@ -7,8 +7,11 @@ endif()
 
 project(ebo VERSION 0.1.0 LANGUAGES CXX)
 
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/.cmake")
+
 include(CTest)
 include(CMakeDependentOption)
+include(Git/Submodule/Packages)
 
 CMAKE_DEPENDENT_OPTION(ebo.tests
   "Build the ebo tests and integrate with ctest"
@@ -17,6 +20,9 @@ CMAKE_DEPENDENT_OPTION(ebo.tests
 add_library(ebo INTERFACE)
 add_library(shacl::ebo ALIAS ebo)
 
+find_package(shacl REQUIRED COMPONENTS trait)
+target_link_libraries(ebo INTERFACE shacl::trait)
+
 target_include_directories(ebo INTERFACE
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
   $<INSTALL_INTERFACE:include>)
@@ -24,9 +30,6 @@ target_include_directories(ebo INTERFACE
 target_compile_features(ebo INTERFACE cxx_std_14)
 
 if(ebo.tests)
-  list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/.cmake")
-
-  include(Git/Submodule/Packages)
   include(Warnings)
   include(Sanitizers)
 
@@ -52,6 +55,7 @@ if(ebo.tests)
 endif()
 
 add_subdirectory(src/shacl)
+add_subdirectory(examples/1)
 
 install(TARGETS ebo EXPORT eboConfig)
 
