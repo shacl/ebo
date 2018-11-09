@@ -109,8 +109,76 @@ preferred given `T` is a
 + a non-final class
 + with no member variables
 
+## How does the shacl::ebo library help?
+
 This decision making is somewhat difficult in the case of multiple
 composition in a generic context. Given `N` composition parameters,
 there are `2^N` possible instantiations based on whether each parameter
-is composed via EBO or as a member variable. The `shacl::ebo::Type`
-class alias encapsulates this decision-making for generic contexts.
+is composed via EBO or as a member variable. This quickly becomes either
+intractible to write or (for those stubborn enough to brute force out the
+exponential number of instantiations) very difficult to maintain. The
+`shacl::ebo::Type` class alias encapsulates this decision-making for
+generic contexts. Consider the following example.
+
+```c++
+#include "shacl/ebo.hpp"
+
+#include <iostream>
+#include <cstdint>
+
+template<typename F0, typename F1, typename M>
+class Combine : shacl::ebo::Type<F0, F1, M> {
+public:
+  using shacl::ebo::Type<F0, F1, M>::Type;
+
+  template<typename Arg>
+  auto operator()(Arg&& arg) const {
+    decltype(auto) f0 = this->get(shacl::ebo::index<0>);
+    decltype(auto) f1 = this->get(shacl::ebo::index<1>);
+    decltype(auto) m  = this->get(shacl::ebo::index<2>);
+    return m(f0(arg), f1(arg));
+  }
+};
+
+template<typename F0, typename F1, typename M>
+auto combine(F0 f0, F1 f1, M m){
+  return Combine<F0, F1, M>{f0, f1, m};
+}
+
+int main(){
+  {
+    // Combine three empty classes
+
+    auto eee = combine([](auto x){ return x + 1; },
+                       [](auto x){ return 2 * x; },
+                       [](auto x, auto y){ return y - x; });
+
+    std::cout << "eee size: " << sizeof(eee) << '\n';
+    std::cout << "eee is empty? : "
+              << (std::is_empty<decltype(eee)>::value ? "yes" : "no")
+              << "\n\n";
+  }{
+    // Combine two empty classes and a non-empty class
+
+    std::int64_t i = 10;
+    auto nee = combine([i](auto x){ return x + i; },
+                       [](auto x){ return 2 * x; },
+                       [](auto x, auto y){ return y - x; });
+
+    std::cout << "nee size: " << sizeof(nee) << '\n';
+    std::cout << "nee is empty? : "
+              << (std::is_empty<decltype(nee)>::value ? "yes" : "no")
+              << "\n\n";
+  }
+}
+```
+
+This program has the following output:
+
+```
+eee size: 1
+eee is empty? : yes
+
+nee size: 8
+nee is empty? : no
+```
