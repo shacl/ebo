@@ -25,7 +25,7 @@ type would reside at the same location in memory. This possibility is
 problematic given the iteration conventions in the language, which assume
 the addresses to the beginning and (exclusive) end of an array are distinct.
 
-## How does this effect me? ##
+## How does this affect me? ##
 
 The introduction of a byte of memory may seem inconsequential. However, in the
 context of object composition, when considered with the memory footprint
