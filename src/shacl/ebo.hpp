@@ -1,6 +1,8 @@
 #ifndef SHACL_EBO_HPP
 #define SHACL_EBO_HPP
 
+#include "shacl/trait.hpp"
+
 #include <type_traits>
 
 namespace shacl {
@@ -25,6 +27,8 @@ struct Implementation<>{
   template<typename...>
   struct type {
     constexpr type() = default;
+    constexpr auto operator==(const type&) const { return true; }
+    constexpr auto operator!=(const type&) const { return false; }
   };
 };
 
@@ -59,9 +63,38 @@ struct Implementation<T, Ts...> {
       Recursion(std::forward<Args>(args)...),
       T(std::forward<Arg>(arg)){}
 
-  protected:
-    constexpr const auto& get(Index<0>) const {
+    // prefer return by value for empty types if possible
+    // and not otherwise inefficient
+    template<typename U = T,
+             std::enable_if_t
+             <std::is_default_constructible<U>::value
+              and std::is_trivially_destructible<U>::value, bool> = true>
+    constexpr auto get(Index<0>) const & {
+      return T{};
+    }
+
+    template<typename U = T,
+             std::enable_if_t
+             <std::is_default_constructible<U>::value
+              and std::is_trivially_destructible<U>::value, bool> = true>
+    constexpr auto get(Index<0>) && {
+      return T{};
+    }
+
+    template<typename U = T,
+             std::enable_if_t
+             <not (std::is_default_constructible<U>::value
+                   and std::is_trivially_destructible<U>::value), bool> = true>
+    constexpr const auto& get(Index<0>) const & {
       return static_cast<const T&>(*this);
+    }
+
+    template<typename U = T,
+             std::enable_if_t
+             <not (std::is_default_constructible<U>::value
+                   and std::is_trivially_destructible<U>::value), bool> = true>
+    constexpr auto&& get(Index<0>) && {
+      return static_cast<T&&>(*this);
     }
 
     /**
@@ -77,8 +110,26 @@ struct Implementation<T, Ts...> {
      *
      **/
     template<int i>
-    constexpr const auto& get(Index<i>) const {
-      return Recursion::get(Index<i - 1>{});
+    constexpr decltype(auto) get(Index<i>) const & {
+      return Recursion::get(index<i - 1>);
+    }
+
+    template<int i>
+    constexpr decltype(auto) get(Index<i>) && {
+      return static_cast<Recursion&&>(*this).get(index<i - 1>);
+    }
+
+    template<typename R = Recursion,
+             std::enable_if_t<trait::EqualityComparable_v<R>, bool> = true>
+    bool operator==(const type& other) const {
+      return
+        static_cast<const R&>(*this) == static_cast<const R&>(other);
+    }
+
+    template<typename U = Recursion,
+             std::enable_if_t<trait::EqualityComparable_v<U>, bool> = true>
+    bool operator!=(const type& other) const {
+      return not (*this == other);
     }
   };
 
@@ -96,12 +147,43 @@ struct Implementation<T, Ts...> {
       Recursion(std::forward<Args>(args)...),
       t(std::forward<Arg>(arg)){}
 
-  protected:
-    constexpr const auto& get(Index<0>) const { return this->t; }
+    constexpr const auto& get(Index<0>) const & { return this->t; }
+    constexpr auto&& get(Index<0>) && { return std::move(this->t); }
 
     template<int i>
-    constexpr const auto& get(Index<i>) const {
+    constexpr decltype(auto) get(Index<i>) const & {
       return Recursion::get(index<i - 1>);
+    }
+
+    template<int i>
+    constexpr decltype(auto) get(Index<i>) && {
+      return static_cast<Recursion&&>(*this).get(index<i - 1>);
+    }
+
+    template<typename R = Recursion,
+             std::enable_if_t<trait::EqualityComparable_v<R>
+                              and std::is_empty<T>::value, bool> = true>
+    bool operator==(const type& other) const {
+      return
+        static_cast<const R&>(*this) == static_cast<const R&>(other);
+    }
+
+    template<typename R = Recursion,
+             std::enable_if_t<trait::EqualityComparable_v<R>
+                              and not std::is_empty<T>::value
+                              and trait::EqualityComparable_v<T>, bool> = true>
+    bool operator==(const type& other) const {
+      return
+        static_cast<const R&>(*this) == static_cast<const R&>(other)
+        and this->get(index<0>) == other.get(index<0>);
+    }
+
+    template<typename U = Recursion,
+             std::enable_if_t<trait::EqualityComparable_v<U>
+                              and (trait::EqualityComparable_v<T>
+                                   or std::is_empty<T>::value), bool> = true>
+    bool operator!=(const type& other) const {
+      return not (*this == other);
     }
   };
 };
