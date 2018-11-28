@@ -47,14 +47,14 @@ SCENARIO("Automated Empty base class optimization with multiple inheritance"){
         WHEN("instance is an lvalue"){
           const auto instance = Type{Empty{}};
           using GetResult_t = decltype(instance.get(shacl::ebo::index<0>));
-          REQUIRE(std::is_same<GetResult_t, Empty>::value);
+          REQUIRE(std::is_same<GetResult_t, const Empty&>::value);
         }
 
         WHEN("instance is an rvalue"){
           auto instance = Type{Empty{}};
           using GetResult_t =
             decltype(std::move(instance).get(shacl::ebo::index<0>));
-          REQUIRE(std::is_same<GetResult_t, Empty>::value);
+          REQUIRE(std::is_same<GetResult_t, Empty&&>::value);
         }
       }
     }
@@ -174,7 +174,7 @@ SCENARIO("Automated Empty base class optimization with multiple inheritance"){
         WHEN("querying for the first type"){
           WHEN("instance is an lvalue"){
             using GetResult_t = decltype(instance.get(shacl::ebo::index<0>));
-            REQUIRE(std::is_same<GetResult_t, const NonEmpty&>::value);
+            REQUIRE(std::is_same<GetResult_t, NonEmpty&>::value);
             REQUIRE(instance.get(shacl::ebo::index<0>).data == 5);
           }
 
@@ -189,7 +189,7 @@ SCENARIO("Automated Empty base class optimization with multiple inheritance"){
         WHEN("querying for the second type"){
           WHEN("instance is an lvalue"){
             using GetResult_t = decltype(instance.get(shacl::ebo::index<1>));
-            REQUIRE(std::is_same<GetResult_t, const NonEmpty&>::value);
+            REQUIRE(std::is_same<GetResult_t, NonEmpty&>::value);
             REQUIRE(instance.get(shacl::ebo::index<1>).data == 10);
           }
 
@@ -227,12 +227,12 @@ SCENARIO("Automated Empty base class optimization with multiple inheritance"){
         WHEN("querying for the second type"){
           WHEN("instance is an lvalue"){
             using GetResult_t = decltype(instance.get(shacl::ebo::index<1>));
-            REQUIRE(std::is_same<GetResult_t, Empty>::value);
+            REQUIRE(std::is_same<GetResult_t, const Empty&>::value);
           }
 
           WHEN("instance is an rvalue"){
-            using GetResult_t = decltype(instance.get(shacl::ebo::index<1>));
-            REQUIRE(std::is_same<GetResult_t, Empty>::value);
+            using GetResult_t = decltype(std::move(instance).get(shacl::ebo::index<1>));
+            REQUIRE(std::is_same<GetResult_t, const Empty&&>::value);
           }
         }
       }
@@ -254,12 +254,12 @@ SCENARIO("Automated Empty base class optimization with multiple inheritance"){
 
         WHEN("querying for the first type"){
           using GetResult_t = decltype(instance.get(shacl::ebo::index<0>));
-          REQUIRE(std::is_same<GetResult_t, Empty>::value);
+          REQUIRE(std::is_same<GetResult_t, const Empty&>::value);
         }
 
         WHEN("querying for the second type"){
           using GetResult_t = decltype(instance.get(shacl::ebo::index<1>));
-          REQUIRE(std::is_same<GetResult_t, AlsoEmpty>::value);
+          REQUIRE(std::is_same<GetResult_t, const AlsoEmpty&>::value);
         }
       }
     }

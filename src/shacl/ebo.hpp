@@ -7,6 +7,7 @@
 
 namespace shacl {
 namespace ebo {
+
 template<int i>
 using Index = std::integral_constant<int, i>;
 
@@ -59,42 +60,26 @@ struct Implementation<T, Ts...> {
              <std::is_constructible<T, Arg>::value
               and std::is_constructible<Recursion, Args...>::value,
               bool> = true>
-    constexpr type(Arg&& arg, Args&&... args) :
+    constexpr type(Arg&& arg, Args&&... args)
+    noexcept(std::is_nothrow_constructible<T, Arg>::value
+             and std::is_nothrow_constructible<Recursion, Args...>::value) :
       Recursion(std::forward<Args>(args)...),
       T(std::forward<Arg>(arg)){}
 
-    // prefer return by value for empty types if possible
-    // and not otherwise inefficient
-    template<typename U = T,
-             std::enable_if_t
-             <std::is_default_constructible<U>::value
-              and std::is_trivially_destructible<U>::value, bool> = true>
-    constexpr auto get(Index<0>) const & {
-      return T{};
+    constexpr auto& get(Index<0>) & noexcept {
+      return static_cast<T&>(*this);
     }
 
-    template<typename U = T,
-             std::enable_if_t
-             <std::is_default_constructible<U>::value
-              and std::is_trivially_destructible<U>::value, bool> = true>
-    constexpr auto get(Index<0>) && {
-      return T{};
-    }
-
-    template<typename U = T,
-             std::enable_if_t
-             <not (std::is_default_constructible<U>::value
-                   and std::is_trivially_destructible<U>::value), bool> = true>
-    constexpr const auto& get(Index<0>) const & {
+    constexpr const auto& get(Index<0>) const & noexcept {
       return static_cast<const T&>(*this);
     }
 
-    template<typename U = T,
-             std::enable_if_t
-             <not (std::is_default_constructible<U>::value
-                   and std::is_trivially_destructible<U>::value), bool> = true>
-    constexpr auto&& get(Index<0>) && {
+    constexpr auto&& get(Index<0>) &&  noexcept {
       return static_cast<T&&>(*this);
+    }
+
+    constexpr const auto&& get(Index<0>) const &&  noexcept {
+      return static_cast<const T&&>(*this);
     }
 
     /**
@@ -110,25 +95,35 @@ struct Implementation<T, Ts...> {
      *
      **/
     template<int i>
-    constexpr decltype(auto) get(Index<i>) const & {
+    constexpr decltype(auto) get(Index<i>) & noexcept {
       return Recursion::get(index<i - 1>);
     }
 
     template<int i>
-    constexpr decltype(auto) get(Index<i>) && {
+    constexpr decltype(auto) get(Index<i>) const & noexcept {
+      return Recursion::get(index<i - 1>);
+    }
+
+    template<int i>
+    constexpr decltype(auto) get(Index<i>) && noexcept {
+      return static_cast<Recursion&&>(*this).get(index<i - 1>);
+    }
+
+    template<int i>
+    constexpr decltype(auto) get(Index<i>) const && noexcept {
       return static_cast<Recursion&&>(*this).get(index<i - 1>);
     }
 
     template<typename R = Recursion,
              std::enable_if_t<trait::EqualityComparable_v<R>, bool> = true>
-    bool operator==(const type& other) const {
+    constexpr bool operator==(const type& other) const {
       return
         static_cast<const R&>(*this) == static_cast<const R&>(other);
     }
 
     template<typename U = Recursion,
              std::enable_if_t<trait::EqualityComparable_v<U>, bool> = true>
-    bool operator!=(const type& other) const {
+    constexpr bool operator!=(const type& other) const {
       return not (*this == other);
     }
   };
@@ -143,21 +138,35 @@ struct Implementation<T, Ts...> {
              <std::is_constructible<T, Arg>::value
               and std::is_constructible<Recursion, Args...>::value,
               bool> = true>
-    constexpr type(Arg&& arg, Args&&... args) :
+    constexpr type(Arg&& arg, Args&&... args)
+    noexcept(std::is_nothrow_constructible<T, Arg>::value
+             and std::is_nothrow_constructible<Recursion, Args...>::value) :
       Recursion(std::forward<Args>(args)...),
       t(std::forward<Arg>(arg)){}
 
-    constexpr const auto& get(Index<0>) const & { return this->t; }
-    constexpr auto&& get(Index<0>) && { return std::move(this->t); }
+    constexpr auto& get(Index<0>) & noexcept { return this->t; }
+    constexpr const auto& get(Index<0>) const & noexcept { return this->t; }
+    constexpr auto&& get(Index<0>) && noexcept { return std::move(this->t); }
+    constexpr const auto&& get(Index<0>) const && noexcept { return std::move(this->t); }
 
     template<int i>
-    constexpr decltype(auto) get(Index<i>) const & {
+    constexpr decltype(auto) get(Index<i>) & noexcept {
       return Recursion::get(index<i - 1>);
     }
 
     template<int i>
-    constexpr decltype(auto) get(Index<i>) && {
+    constexpr decltype(auto) get(Index<i>) const & noexcept {
+      return Recursion::get(index<i - 1>);
+    }
+
+    template<int i>
+    constexpr decltype(auto) get(Index<i>) && noexcept {
       return static_cast<Recursion&&>(*this).get(index<i - 1>);
+    }
+
+    template<int i>
+    constexpr decltype(auto) get(Index<i>) const && noexcept {
+      return static_cast<const Recursion&&>(*this).get(index<i - 1>);
     }
 
     template<typename R = Recursion,

@@ -17,6 +17,10 @@ CMAKE_DEPENDENT_OPTION(ebo.tests
   "Build the ebo tests and integrate with ctest"
   ON "BUILD_TESTING; NOT subproject" OFF)
 
+CMAKE_DEPENDENT_OPTION(ebo.examples
+  "Build the ebo example and integrate with ctest"
+  ON "NOT subproject" OFF)
+
 add_library(ebo INTERFACE)
 add_library(shacl::ebo ALIAS ebo)
 
@@ -55,7 +59,10 @@ if(ebo.tests)
 endif()
 
 add_subdirectory(src/shacl)
-add_subdirectory(examples/1)
+
+if(ebo.examples)
+  add_subdirectory(examples/1)
+endif()
 
 install(TARGETS ebo EXPORT eboTargets)
 
