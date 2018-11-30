@@ -63,23 +63,23 @@ struct Implementation<T, Ts...> {
     constexpr type(Arg&& arg, Args&&... args)
     noexcept(std::is_nothrow_constructible<T, Arg>::value
              and std::is_nothrow_constructible<Recursion, Args...>::value) :
-      Recursion(std::forward<Args>(args)...),
+                 Recursion(std::forward<Args>(args)...),
       T(std::forward<Arg>(arg)){}
 
-    constexpr auto& get(Index<0>) & noexcept {
-      return static_cast<T&>(*this);
+    constexpr T& get(Index<0>) & noexcept {
+      return *this;
     }
 
-    constexpr const auto& get(Index<0>) const & noexcept {
-      return static_cast<const T&>(*this);
+    constexpr const T& get(Index<0>) const & noexcept {
+      return *this;
     }
 
-    constexpr auto&& get(Index<0>) &&  noexcept {
-      return static_cast<T&&>(*this);
+    constexpr T&& get(Index<0>) &&  noexcept {
+      return std::move(*this);
     }
 
-    constexpr const auto&& get(Index<0>) const &&  noexcept {
-      return static_cast<const T&&>(*this);
+    constexpr const T&& get(Index<0>) const &&  noexcept {
+      return std::move(*this);
     }
 
     /**
@@ -144,10 +144,10 @@ struct Implementation<T, Ts...> {
       Recursion(std::forward<Args>(args)...),
       t(std::forward<Arg>(arg)){}
 
-    constexpr auto& get(Index<0>) & noexcept { return this->t; }
-    constexpr const auto& get(Index<0>) const & noexcept { return this->t; }
-    constexpr auto&& get(Index<0>) && noexcept { return std::move(this->t); }
-    constexpr const auto&& get(Index<0>) const && noexcept { return std::move(this->t); }
+    constexpr T& get(Index<0>) & noexcept { return this->t; }
+    constexpr const T& get(Index<0>) const & noexcept { return this->t; }
+    constexpr T&& get(Index<0>) && noexcept { return std::move(this->t); }
+    constexpr const T&& get(Index<0>) const && noexcept { return std::move(this->t); }
 
     template<int i>
     constexpr decltype(auto) get(Index<i>) & noexcept {
