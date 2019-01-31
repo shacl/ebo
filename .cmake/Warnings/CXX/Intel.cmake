@@ -5,7 +5,7 @@ string(CONCAT generator
    ">;"
   "$<$<BOOL:$<TARGET_PROPERTY:WARN_ALL>>"
    ":$<$<PLATFORM_ID:Windows>:/W3>"
-    "$<$<NOT:$<PLATFORM_ID:Windows>>:-w3>"
+    "$<$<NOT:$<PLATFORM_ID:Windows>>:-w2>"
    ">;"
   "$<$<BOOL:$<TARGET_PROPERTY:Intel_ENABLED_WARNINGS>>"
    ":$<$<PLATFORM_ID:Windows>:/Qdiag-enable:>"
