@@ -19,6 +19,11 @@ include(CMakePackageConfigHelpers)
 include(CMakeDependentOption)
 include(CTest)
 
+#
+# The file referenced in this block used by version branches of shacl::ebo to
+# fix the version of the dependencies found by the find_package overload
+# provided by Git Submodule Packages.
+#
 if(EXISTS "${PROJECT_SOURCE_DIR}/cmake/specification.cmake")
   set(git.submodule.packages.specification
     "${PROJECT_SOURCE_DIR}/cmake/specification.cmake" CACHE FILEPATH
