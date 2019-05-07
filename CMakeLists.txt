@@ -58,7 +58,7 @@ if(shacl.ebo.tests)
     COMPATIBLE_INTERFACE_BOOL
     WARN_ALL WARN_ERROR)
 
-  find_package(Catch2)
+  find_package(Catch2 REQUIRED)
   target_link_libraries(shacl::ebo::testing INTERFACE
     Catch2::Catch2
     shacl::cmake::Warnings_CXX
