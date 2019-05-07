@@ -52,8 +52,8 @@ if(shacl.ebo.tests)
   find_package(Catch2)
   target_link_libraries(shacl::ebo::testing INTERFACE
     Catch2::Catch2
-    Warnings::Warnings_CXX
-    shacl::Sanitizers_CXX
+    shacl::cmake::Warnings_CXX
+    shacl::cmake::Sanitizers_CXX
     shacl::ebo)
 endif()
 
