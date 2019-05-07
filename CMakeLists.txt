@@ -11,6 +11,8 @@ project(shacl-ebo
   HOMEPAGE_URL "https://xcp-stash.lanl.gov/projects/SCL/repos/ebo"
   LANGUAGES CXX)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/.cmake")
 include(Git/Submodule/Packages)
 include(CMakePackageConfigHelpers)
