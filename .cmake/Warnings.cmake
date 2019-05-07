@@ -1,5 +1,6 @@
-include(Backports/IncludeGuard)
+cmake_minimum_required(VERSION 3.12.1)
 include_guard(GLOBAL)
+include(CheckLanguage)
 
 define_property(TARGET PROPERTY WARN_ALL
 BRIEF_DOCS
@@ -101,15 +102,16 @@ FULL_DOCS
 
  Multiple entries must be semicolon separated e.g. unused;unused")
 
-add_library(Warnings_C INTERFACE)
 include(Warnings/C)
 
-add_library(Warnings_CXX INTERFACE)
 include(Warnings/CXX)
 
-add_library(Warnings_Fortran INTERFACE)
 include(Warnings/Fortran)
 
-add_library(Warnings::Warnings_C ALIAS Warnings_C)
-add_library(Warnings::Warnings_CXX ALIAS Warnings_CXX)
-add_library(Warnings::Warnings_Fortran ALIAS Warnings_Fortran)
+include(Warnings/CUDA)
+
+install(FILES "${CMAKE_CURRENT_LIST_DIR}/Warnings.cmake"
+  DESTINATION share/cmake/shacl/.cmake)
+
+install(DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/Warnings"
+  DESTINATION share/cmake/shacl/.cmake)

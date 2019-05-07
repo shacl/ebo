@@ -38,8 +38,8 @@ foreach(toggle ON OFF)
     INPUT ${CMAKE_CURRENT_BINARY_DIR}/backtrace.${toggle}.f90.in)
 
   target_sources(backtrace.${toggle} PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/backtrace.${toggle}.f90)
-  add_test(NAME Fortran.Backtrace.${toggle} COMMAND backtrace.${toggle})
-  set_tests_properties(Fortran.Backtrace.${toggle} PROPERTIES
+  add_test(NAME shacl.cmake.Fortran.Backtrace.${toggle} COMMAND backtrace.${toggle})
+  set_tests_properties(shacl.cmake.Fortran.Backtrace.${toggle} PROPERTIES
     PASS_REGULAR_EXPRESSION 
     "^${${CMAKE_Fortran_COMPILER_ID}.${CMAKE_HOST_SYSTEM_NAME}.${toggle}}\n$")
 

@@ -1,3 +1,4 @@
+cmake_minimum_required(VERSION 3.12.1)
 string(CONCAT generator
   "$<$<OR:$<AND:$<STREQUAL:Fortran,$<TARGET_PROPERTY:LINKER_LANGUAGE>>,"
                "$<STREQUAL:Intel,${CMAKE_Fortran_COMPILER_ID}>>,"
@@ -15,7 +16,6 @@ string(CONCAT generator
       ">"
       "$<$<PLATFORM_ID:Windows>:-STACK:$<TARGET_PROPERTY:LINK_STACK_SIZE>>"
     ">"
-  ">"
-)
+  ">")
 
-target_link_libraries(LinkOptions_StackSize INTERFACE ${generator})
+target_link_libraries(shacl::cmake::LinkOptions::StackSize INTERFACE ${generator})

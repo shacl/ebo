@@ -17,7 +17,7 @@ elseif( "${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Flang" )
 endif()
 
 add_test(
-  NAME no_backslash_escape
+  NAME shacl.cmake.no_backslash_escape
   COMMAND use_no_backslash_escape
 )
-set_tests_properties(no_backslash_escape PROPERTIES PASS_REGULAR_EXPRESSION "^${expected}$")
+set_tests_properties(shacl.cmake.no_backslash_escape PROPERTIES PASS_REGULAR_EXPRESSION "^${expected}$")

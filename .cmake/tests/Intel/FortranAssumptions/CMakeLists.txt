@@ -13,7 +13,7 @@ file(GENERATE
 target_sources(assumptions.test PUBLIC
   ${CMAKE_CURRENT_BINARY_DIR}/assumptions.f90)
 
-add_test(NAME Intel.FortranAssumptions COMMAND assumptions.test)
+add_test(NAME shacl.cmake.Intel.FortranAssumptions COMMAND assumptions.test)
 
 if(CMAKE_Fortran_COMPILER_ID STREQUAL "Intel")
   if(WIN32)
@@ -24,5 +24,5 @@ if(CMAKE_Fortran_COMPILER_ID STREQUAL "Intel")
   set(regex "${regex}old_xor,std_intent_in,noprotect_parens,norealloc_lhs")
 endif()
 
-set_tests_properties(Intel.FortranAssumptions
+set_tests_properties(shacl.cmake.Intel.FortranAssumptions
   PROPERTIES PASS_REGULAR_EXPRESSION "${regex}")

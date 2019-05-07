@@ -29,40 +29,40 @@ set(expected_CXX "")
 set(expected_Fortran "")
 
 if( "${CMAKE_C_COMPILER_ID}" STREQUAL "Intel" )
-  set(expected_C "-fp-model\;consistent\n")
+  set(expected_C "-fp-model=consistent\n")
   if( WIN32 )
     set(expected_C "/fp:consistent\n")
   endif()
 endif()
 
 if( "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel" )
-  set(expected_CXX "-fp-model\;consistent\n")
+  set(expected_CXX "-fp-model=consistent\n")
   if( WIN32 )
     set(expected_CXX "/fp:consistent\n")
   endif()
 endif()
 
 if( "${CMAKE_Fortran_COMPILER_ID}" STREQUAL "Intel" )
-  set(expected_Fortran "-fp-model\;consistent\n")
+  set(expected_Fortran "-fp-model=consistent\n")
   if( WIN32 )
     set(expected_Fortran "/fp:consistent\n")
   endif()
 endif()
 
 add_test(
-  NAME intel_fp_model_C
+  NAME shacl.cmake.intel_fp_model_C
   COMMAND use_intel_fp_model_C
 )
-set_tests_properties(intel_fp_model_C PROPERTIES PASS_REGULAR_EXPRESSION "^${expected_C}$")
+set_tests_properties(shacl.cmake.intel_fp_model_C PROPERTIES PASS_REGULAR_EXPRESSION "^${expected_C}$")
 
 add_test(
-  NAME intel_fp_model_CXX
+  NAME shacl.cmake.intel_fp_model_CXX
   COMMAND use_intel_fp_model_CXX
 )
-set_tests_properties(intel_fp_model_CXX PROPERTIES PASS_REGULAR_EXPRESSION "^${expected_CXX}$")
+set_tests_properties(shacl.cmake.intel_fp_model_CXX PROPERTIES PASS_REGULAR_EXPRESSION "^${expected_CXX}$")
 
 add_test(
-  NAME intel_fp_model_Fortran
+  NAME shacl.cmake.intel_fp_model_Fortran
   COMMAND use_intel_fp_model_Fortran
 )
-set_tests_properties(intel_fp_model_Fortran PROPERTIES PASS_REGULAR_EXPRESSION "^${expected_Fortran}$")
+set_tests_properties(shacl.cmake.intel_fp_model_Fortran PROPERTIES PASS_REGULAR_EXPRESSION "^${expected_Fortran}$")

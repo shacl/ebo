@@ -1,4 +1,4 @@
 add_subdirectory(FortranAssumptions)
 add_subdirectory(FortranStandardAdherence)
 add_subdirectory(FPModel)
-
+add_subdirectory(FPSpeculation)

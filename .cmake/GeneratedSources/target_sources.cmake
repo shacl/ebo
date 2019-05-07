@@ -1,3 +1,4 @@
+cmake_minimum_required(VERSION 3.12.1)
 backup(target_sources)
 
 function(target_sources target tag linkage)
@@ -8,7 +9,6 @@ function(target_sources target tag linkage)
 
   get_target_property(library_type ${target} TYPE)
 
-  stripped(${target})
   foreach(entry ${ARGN})
     if(entry STREQUAL "PUBLIC"
         OR entry STREQUAL "PRIVATE"
@@ -29,7 +29,7 @@ function(target_sources target tag linkage)
       endif()
 
       unset(generator_expression)
-      previous_target_sources(${stripped_target_name}.generated_sources.${linkage} INTERFACE "${entry}")
+      previous_target_sources(${target}.generated_sources.${linkage} INTERFACE "${entry}")
 
       get_filename_component(directory ${entry} DIRECTORY)
       get_filename_component(file ${entry} NAME)
@@ -40,7 +40,7 @@ function(target_sources target tag linkage)
 
       foreach(index RANGE 7 63)
         string(SUBSTRING ${path_hash} 0 ${index} potential_hash)
-        set(custom_target ${stripped_target_name}.${potential_hash}.${file})
+        set(custom_target ${target}.${potential_hash}.${file})
         if(NOT TARGET ${custom_target})
           break()
         endif()
@@ -51,7 +51,7 @@ function(target_sources target tag linkage)
         ${custom_target} PROPERTIES FOLDER generated)
 
       add_dependencies(
-        ${stripped_target_name}.generated_sources.${linkage}
+        ${target}.generated_sources.${linkage}
         ${custom_target})
     endif()
   endforeach()
