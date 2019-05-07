@@ -1,5 +1,0 @@
-#include <iostream>
- 
-int main(){
-  std::cout << "$<TARGET_PROPERTY:warnings.cu.test,COMPILE_OPTIONS>" << std::endl;
-}

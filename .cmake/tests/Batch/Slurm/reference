@@ -1,1 +1,0 @@
-srun;--exclusive;-m;cyclic;--cpu_bind=none;-n;2;-c;4
