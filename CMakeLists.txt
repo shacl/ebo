@@ -17,6 +17,13 @@ include(CMakePackageConfigHelpers)
 include(CMakeDependentOption)
 include(CTest)
 
+if(EXISTS "${PROJECT_SOURCE_DIR}/cmake/specification.cmake")
+  set(git.submodule.packages.specification
+    "${PROJECT_SOURCE_DIR}/cmake/specification.cmake" CACHE FILEPATH
+    "(READ ONLY) Path to consumed git submodule packages specification file" FORCE)
+  include("${PROJECT_SOURCE_DIR}/cmake/specification.cmake")
+endif()
+
 CMAKE_DEPENDENT_OPTION(shacl.ebo.tests
   "Build the ebo tests and integrate with ctest"
   ON "BUILD_TESTING; NOT subproject" OFF)
