@@ -1,6 +1,8 @@
 [submodule "dependencies/Catch2"]
 	path = dependencies/Catch2
-	url = ssh://git@xcp-stash.lanl.gov:7999/catchorg/Catch2
+	url = ../../catchorg/Catch2
+	branch = master
 [submodule "dependencies/shacl"]
 	path = dependencies/shacl
-	url = ssh://git@xcp-stash.lanl.gov:7999/scl/shacl.git
+	url = ../../scl/shacl.git
+	branch = master
