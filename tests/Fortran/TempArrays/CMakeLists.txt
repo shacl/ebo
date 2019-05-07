@@ -8,17 +8,17 @@ add_executable(use_temp_arrays ${CMAKE_CURRENT_BINARY_DIR}/use_temp_arrays.F90)
 set_target_properties(use_temp_arrays PROPERTIES Fortran_TEMP_ARRAY_THRESHOLD 1024)
 target_link_libraries(use_temp_arrays PRIVATE Fortran::TempArrays)
 
-set(expected_GNU "-fmax-stack-var-size=1024000\n")
-set(expected_Intel "-heap-arrays 1024\n")
+set(expected_GNU "-fmax-stack-var-size=1024000")
+set(expected_Intel "-heap-arrays 1024")
 if( WIN32 )
-  set(expected_Intel "/heap-arrays:1024\n")
+  set(expected_Intel "/heap-arrays:1024")
 endif()
-set(expected_PGI "-Mnostack_arrays\n")
+set(expected_PGI "-Mnostack_arrays")
 
 add_test(
-  NAME Fortran.TempArrays
+  NAME shacl.cmake.Fortran.TempArrays
   COMMAND use_temp_arrays
 )
-set_tests_properties(Fortran.TempArrays PROPERTIES
-  PASS_REGULAR_EXPRESSION "^${expected_${CMAKE_Fortran_COMPILER_ID}}$"
+set_tests_properties(shacl.cmake.Fortran.TempArrays PROPERTIES
+  PASS_REGULAR_EXPRESSION "^${expected_${CMAKE_Fortran_COMPILER_ID}}\n$"
 )

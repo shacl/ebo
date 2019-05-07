@@ -9,9 +9,9 @@ add_library(dilib STATIC "")
 target_link_libraries(diexe PRIVATE dilib)
 
 add_test(
-  NAME di_test
+  NAME shacl.cmake.di_test
   COMMAND diexe
 )
-set_tests_properties(di_test PROPERTIES 
+set_tests_properties(shacl.cmake.di_test PROPERTIES 
   PASS_REGULAR_EXPRESSION "Hello World!"
 )

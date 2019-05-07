@@ -1,4 +1,4 @@
-include(Backports/IncludeGuard)
+cmake_minimum_required(VERSION 3.12.1)
 include_guard(GLOBAL)
 
 define_property(TARGET PROPERTY Intel_Fortran_ENABLED_ASSUMPTIONS
@@ -25,8 +25,18 @@ FULL_DOCS
 
  Multiple entries must be semicolon separated e.g. unused;unused")
 
-add_library(Intel_Assumptions INTERFACE)
-add_library(Intel::FortranAssumptions ALIAS Intel_Assumptions)
+add_library(shacl::cmake::Intel::Fortran::Assumptions INTERFACE IMPORTED GLOBAL)
+
+# These aliases are provided for short term backwards compatability.
+#
+# Please don't not use in new work and update existing work to use the
+# the imported target defined above as soon as reasonably possible.
+#
+add_library(Intel::FortranAssumptions ALIAS
+  shacl::cmake::Intel::Fortran::Assumptions)
+
+add_library(Intel_Assumptions ALIAS
+  shacl::cmake::Intel::Fortran::Assumptions)
 
 string(CONCAT generator
   "$<$<AND:$<STREQUAL:Intel,${CMAKE_Fortran_COMPILER_ID}>"
@@ -43,7 +53,11 @@ string(CONCAT generator
       "$<$<NOT:$<PLATFORM_ID:Windows>>:-assume;no>"
     ">"
     "$<JOIN:$<TARGET_PROPERTY:Intel_Fortran_DISABLED_ASSUMPTIONS>,$<COMMA>no>"
-  ">;"
-)
+  ">;")
 
-target_compile_options(Intel_Assumptions INTERFACE ${generator})
+target_compile_options(shacl::cmake::Intel::Fortran::Assumptions INTERFACE
+  ${generator})
+
+install(FILES
+  ${CMAKE_CURRENT_LIST_DIR}/FortranAssumptions.cmake
+  DESTINATION share/cmake/shacl/.cmake/Intel)

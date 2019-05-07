@@ -1,3 +1,4 @@
+cmake_minimum_required(VERSION 3.12.1)
 string(CONCAT generator
   "$<$<STREQUAL:Intel,${CMAKE_Fortran_COMPILER_ID}>:"
     "$<$<BOOL:$<TARGET_PROPERTY:Fortran_BACKTRACE>>:"
@@ -11,4 +12,4 @@ string(CONCAT generator
   ">"
 )
 
-target_compile_options(Fortran_Backtrace INTERFACE ${generator})
+target_compile_options(shacl::cmake::Fortran::Backtrace INTERFACE ${generator})

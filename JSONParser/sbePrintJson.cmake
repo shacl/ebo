@@ -1,5 +1,0 @@
-macro(sbePrintJson prefix)
-  foreach(json_var ${${prefix}})
-    message("${json_var} = ${${json_var}}")
-  endforeach()
-endmacro()

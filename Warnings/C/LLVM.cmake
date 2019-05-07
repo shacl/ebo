@@ -1,3 +1,4 @@
+cmake_minimum_required(VERSION 3.12.1)
 string(CONCAT generator
   "$<$<BOOL:$<TARGET_PROPERTY:WARN_ERROR>>:-Werror>;"
   "$<$<BOOL:$<TARGET_PROPERTY:WARN_ALL>>:"
@@ -14,5 +15,5 @@ string(CONCAT generator
   "$<$<BOOL:$<TARGET_PROPERTY:LLVM_DISABLED_WARNINGS>>:"
     "-Wno-$<JOIN:$<TARGET_PROPERTY:LLVM_DISABLED_WARNINGS>,;-Wno->>;")
 
-target_compile_options(Warnings_C INTERFACE
+target_compile_options(shacl::cmake::Warnings_C INTERFACE
   $<$<OR:$<C_COMPILER_ID:AppleClang>,$<C_COMPILER_ID:Clang>>:${generator}>)

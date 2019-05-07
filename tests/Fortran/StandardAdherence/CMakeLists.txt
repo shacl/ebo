@@ -15,8 +15,8 @@ endif()
 
 set(expected "${expected_${CMAKE_Fortran_COMPILER_ID}}")
 
-add_test(NAME Fortran.StandardAdherence
+add_test(NAME shacl.cmake.Fortran.StandardAdherence
   COMMAND fortran_standard_adherence)
 
-set_tests_properties(Fortran.StandardAdherence PROPERTIES
+set_tests_properties(shacl.cmake.Fortran.StandardAdherence PROPERTIES
   PASS_REGULAR_EXPRESSION "^${expected}$")

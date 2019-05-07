@@ -15,6 +15,6 @@ if( CMAKE_CONFIGURATION_TYPES )
 endif()
 
 add_test(
-  NAME Fortran.ModuleDirectory
+  NAME shacl.cmake.Fortran.ModuleDirectory
   COMMAND ${CMAKE_COMMAND} -D module_file=${test_module_dir}${test_module_dir_suffix}/test_mod.mod -P ${CMAKE_CURRENT_LIST_DIR}/check_exists.cmake
 )

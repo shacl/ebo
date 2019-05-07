@@ -10,7 +10,7 @@ add_executable(intel_standard_adherence
 target_link_libraries(intel_standard_adherence
   PRIVATE Intel::FortranStandardAdherence)
 
-add_test(NAME Intel.FortranStandardAdherence
+add_test(NAME shacl.cmake.Intel.FortranStandardAdherence
   COMMAND intel_standard_adherence)
 
 if(CMAKE_Fortran_COMPILER_ID STREQUAL "Intel")
@@ -22,5 +22,5 @@ if(CMAKE_Fortran_COMPILER_ID STREQUAL "Intel")
   set(regex "${regex}nostd_mod_proc_name")
 endif()
 
-set_tests_properties(Intel.FortranStandardAdherence
+set_tests_properties(shacl.cmake.Intel.FortranStandardAdherence
   PROPERTIES PASS_REGULAR_EXPRESSION "${regex}")

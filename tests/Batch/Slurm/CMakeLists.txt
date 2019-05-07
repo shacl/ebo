@@ -14,7 +14,7 @@ if(SLURM_SRUN_COMMAND)
 
   add_test(
     NAME
-      slurm_test
+      shacl.cmake.slurm_test
     COMMAND
       ${CMAKE_COMMAND} -E compare_files
       "${CMAKE_CURRENT_SOURCE_DIR}/reference"

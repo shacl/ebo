@@ -1,3 +1,4 @@
+cmake_minimum_required(VERSION 3.12.1)
 add_library(warnings_Fortran_Intel INTERFACE)
 
 string(CONCAT generator
@@ -24,5 +25,5 @@ string(CONCAT generator
     "$<JOIN:$<TARGET_PROPERTY:Intel_DISABLED_WARNINGS>,$<COMMA>>"
    ">;")
 
-target_compile_options(Warnings_Fortran INTERFACE
+target_compile_options(shacl::cmake::Warnings_Fortran INTERFACE
   $<$<STREQUAL:${CMAKE_Fortran_COMPILER_ID},Intel>:${generator}>)
