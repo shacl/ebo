@@ -1,15 +1,16 @@
+cmake_minimum_required(VERSION 3.12.1)
 backup(add_library)
 
 function(add_library)
   previous_add_library("${ARGN}")
 
   set(target ${ARGV0})
-  set(keyword ${ARGV1})
+
   get_target_property(is_alias ${target} ALIASED_TARGET)
   get_target_property(is_imported ${target} IMPORTED)
   get_target_property(library_type ${target} TYPE)
 
-  if(is_alias OR is_imported OR target MATCHES "generated_sources")
+  if(is_alias OR is_imported)
     return()
   endif()
 
@@ -18,30 +19,23 @@ function(add_library)
     return()
   endif()
 
-  stripped(${target})
+  previous_add_library(${target}.generated_sources.INTERFACE
+    INTERFACE IMPORTED GLOBAL)
 
-  previous_add_library(${stripped_target_name}.generated_sources.INTERFACE INTERFACE)
   target_link_libraries(${target} INTERFACE
-    $<BUILD_INTERFACE:${stripped_target_name}.generated_sources.INTERFACE>)
+    $<BUILD_INTERFACE:${target}.generated_sources.INTERFACE>)
 
   if(NOT library_type STREQUAL "INTERFACE_LIBRARY")
-    previous_add_library(${stripped_target_name}.generated_sources.PUBLIC INTERFACE)
+    previous_add_library(${target}.generated_sources.PUBLIC
+      INTERFACE IMPORTED GLOBAL)
+
     target_link_libraries(${target} PUBLIC
-      $<BUILD_INTERFACE:${stripped_target_name}.generated_sources.PUBLIC>)
+      $<BUILD_INTERFACE:${target}.generated_sources.PUBLIC>)
 
-    previous_add_library(${stripped_target_name}.generated_sources.PRIVATE INTERFACE)
+    previous_add_library(${target}.generated_sources.PRIVATE
+      INTERFACE IMPORTED GLOBAL)
+
     target_link_libraries(${target} PRIVATE
-      $<BUILD_INTERFACE:${stripped_target_name}.generated_sources.PRIVATE>)
-
-    export(TARGETS
-      ${stripped_target_name}.generated_sources.PUBLIC
-      ${stripped_target_name}.generated_sources.PRIVATE
-      ${stripped_target_name}.generated_sources.INTERFACE
-      NAMESPACE export::
-      FILE ${CMAKE_CURRENT_BINARY_DIR}/faux-exports/${stripped_target_name}.cmake)
-  else()
-    export(TARGETS ${stripped_target_name}.generated_sources.INTERFACE
-      NAMESPACE export::
-      FILE ${CMAKE_CURRENT_BINARY_DIR}/faux-exports/${stripped_target_name}.cmake)
+      $<BUILD_INTERFACE:${target}.generated_sources.PRIVATE>)
   endif()
 endfunction()

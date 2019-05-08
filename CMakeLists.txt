@@ -1,101 +1,123 @@
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.12)
 
 set(subproject OFF)
 if(DEFINED PROJECT_NAME)
   set(subproject ON)
 endif()
 
-project(ebo VERSION 0.1.0 LANGUAGES CXX)
+project(shacl-ebo
+  VERSION 1.0.0
+  DESCRIPTION "A library for composition via Empty Base Optimization"
+  HOMEPAGE_URL "https://xcp-stash.lanl.gov/projects/SCL/repos/ebo"
+  LANGUAGES CXX)
+
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/.cmake")
-
-include(CTest)
-include(CMakeDependentOption)
 include(Git/Submodule/Packages)
+include(CMakePackageConfigHelpers)
+include(CMakeDependentOption)
+include(CTest)
 
-CMAKE_DEPENDENT_OPTION(ebo.tests
+#
+# The file referenced in this block used by version branches of shacl::ebo to
+# fix the version of the dependencies found by the find_package overload
+# provided by Git Submodule Packages.
+#
+if(EXISTS "${PROJECT_SOURCE_DIR}/cmake/specification.cmake")
+  set(git.submodule.packages.specification
+    "${PROJECT_SOURCE_DIR}/cmake/specification.cmake" CACHE FILEPATH
+    "(READ ONLY) Path to consumed git submodule packages specification file" FORCE)
+  include("${PROJECT_SOURCE_DIR}/cmake/specification.cmake")
+endif()
+
+CMAKE_DEPENDENT_OPTION(shacl.ebo.tests
   "Build the ebo tests and integrate with ctest"
   ON "BUILD_TESTING; NOT subproject" OFF)
 
-CMAKE_DEPENDENT_OPTION(ebo.examples
+CMAKE_DEPENDENT_OPTION(shacl.ebo.examples
   "Build the ebo example and integrate with ctest"
   ON "NOT subproject" OFF)
 
 add_library(ebo INTERFACE)
 add_library(shacl::ebo ALIAS ebo)
 
-find_package(shacl REQUIRED COMPONENTS trait)
-target_link_libraries(ebo INTERFACE shacl::trait)
-
-target_include_directories(ebo INTERFACE
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
-  $<INSTALL_INTERFACE:include>)
-
-target_compile_features(ebo INTERFACE cxx_std_14)
-
-if(ebo.tests)
+if(shacl.ebo.tests)
   include(Warnings)
   include(Sanitizers)
 
-  find_package(Catch2)
+  configure_file(
+    "${PROJECT_SOURCE_DIR}/cmake/CTestCustom.cmake"
+    "${PROJECT_BINARY_DIR}/CTestCustom.cmake"
+    COPYONLY)
 
   set(CMAKE_CXX_EXTENSIONS OFF)
 
-  add_library(testing INTERFACE)
-  add_library(shacl::ebo::testing ALIAS testing)
+  add_library(shacl::ebo::testing IMPORTED INTERFACE)
 
-  set_target_properties(testing PROPERTIES
+  set_target_properties(shacl::ebo::testing PROPERTIES
     INTERFACE_WARN_ALL ON
     INTERFACE_WARN_ERROR ON)
 
-  set_property(TARGET testing APPEND PROPERTY COMPATIBLE_INTERFACE_BOOL
+  set_property(TARGET shacl::ebo::testing APPEND PROPERTY
+    COMPATIBLE_INTERFACE_BOOL
     WARN_ALL WARN_ERROR)
 
-  target_link_libraries(testing INTERFACE
+  find_package(Catch2 REQUIRED)
+  target_link_libraries(shacl::ebo::testing INTERFACE
     Catch2::Catch2
-    Warnings::Warnings_CXX
-    shacl::sanitizers_CXX
+    shacl::cmake::Warnings_CXX
+    shacl::cmake::Sanitizers_CXX
     shacl::ebo)
 endif()
 
-add_subdirectory(src/shacl)
+target_compile_features(ebo INTERFACE cxx_std_14)
+
+find_package(shacl REQUIRED COMPONENTS trait)
+target_link_libraries(ebo INTERFACE shacl::trait)
+
+include(GNUInstallDirs)
+
+string(CONCAT prefix
+  "$<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>"
+  "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>")
+
+target_include_directories(ebo INTERFACE "${prefix}")
+
+add_subdirectory(include/shacl)
 
 if(ebo.examples)
   add_subdirectory(examples/1)
 endif()
 
+install(DIRECTORY include/
+  DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
+  FILES_MATCHING PATTERN "*.hpp"
+  PATTERN "*test*" EXCLUDE)
+
+install(FILES
+  "${CMAKE_CURRENT_SOURCE_DIR}/.cmake/shacl-config.cmake"
+  DESTINATION share/cmake/shacl)
+
 install(TARGETS ebo EXPORT eboTargets)
 
 install(EXPORT eboTargets
-  FILE eboTargets.cmake
+  FILE shacl-ebo-targets.cmake
   NAMESPACE shacl::
-  DESTINATION share/cmake/shacl/ebo)
+  DESTINATION share/cmake/shacl-ebo)
 
-install(DIRECTORY src/ DESTINATION include
-  PATTERN "*test*" EXCLUDE
-  PATTERN "*CMakeLists.txt" EXCLUDE
-  PATTERN "*~" EXCLUDE)
-
-include(CMakePackageConfigHelpers)
-write_basic_package_version_file("eboConfigVersion.cmake"
-  VERSION ${ebo_VERSION}
+write_basic_package_version_file("shacl-ebo-config-version.cmake"
+  VERSION ${PROJECT_VERSION}
   COMPATIBILITY SameMajorVersion)
 
 install(FILES
-  "${ebo_SOURCE_DIR}/.cmake/eboConfig.cmake"
-  "${ebo_BINARY_DIR}/eboConfigVersion.cmake"
-  DESTINATION share/cmake/shacl/ebo)
-
-install(FILES
-  "${ebo_SOURCE_DIR}/.cmake/shaclConfig.cmake"
-  DESTINATION share/cmake/shacl)
+  "${PROJECT_SOURCE_DIR}/cmake/shacl-ebo-config.cmake"
+  "${PROJECT_BINARY_DIR}/shacl-ebo-config-version.cmake"
+  DESTINATION share/cmake/shacl-ebo)
 
 if(NOT subproject)
-  include(InstallRequiredSystemLibraries)
   set(CPACK_PACKAGE_VENDOR "Los Alamos National Laboratory")
   set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
-  set(CMAKE_PROJECT_HOMEPAGE_URL "https://xcp-stash.lanl.gov/projects/SCL/repos/ebo")
-  set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "A library for composition via Empty Base Optimization")
   set(CPACK_PACKAGE_CONTACT "amccartney@lanl.gov")
   include(CPack)
 endif()
