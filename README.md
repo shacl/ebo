@@ -182,3 +182,7 @@ eee is empty? : yes
 nee size: 8
 nee is empty? : no
 ```
+
+## License ##
+
+See [license file.](./LICENSE)
